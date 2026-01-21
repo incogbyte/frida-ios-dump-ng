@@ -1,6 +1,6 @@
 # frida-ios-dump-ng
 
-Pull a decrypted IPA from a jailbroken device and extract `.ipa` files from jailbroken iOS devices using Frida 17+. Supports parallel downloads, metadata analysis, and IPA comparison (Work in progress).
+Pull a decrypted IPA from a jailbroken device and extract `.ipa` files from jailbroken iOS devices using Frida 17+. Supports metadata analysis, and IPA comparison (Work in progress).
 
 > **Note:** This project was inspired by [frida-ios-dump](https://github.com/AloneMonkey/frida-ios-dump). I created `frida-ios-dump-ng` to address stability issues, improve performance with  async techniques, and add new features like metadata analysis and diffing.
 > Thanks to [AloneMonkey](https://github.com/AloneMonkey) for the inspiration and the original tool and [Frida](https://frida.re/) for the amazing framework.

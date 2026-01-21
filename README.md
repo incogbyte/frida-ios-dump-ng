@@ -35,24 +35,67 @@ Pull a decrypted IPA from a jailbroken device and extract `.ipa` files from jail
 
 ## Usage
 
-### Basic Extraction
-Extract the decrypted IPA from a connected device via USB:
-
 ```bash
-# Spawn and dump by Bundle ID (Recommended)
-python3 -m frida_ios_dump_ng -U -f com.example.app -o MyApp.ipa
+python3 extract.py -h                                                                                                                                           
+usage: extract.py [-h] [-f SPAWN] [--pid PID] [-o OUTPUT] [--app-data] [--metadata] [--diff IPA1 IPA2] [--no-resume] [-U] [-H HOST] [-P PORT] [-u USERNAME] [-p PASSWORD] [--workers WORKERS] [-v] [-q]
+                  [--log-file LOG_FILE]
+                  [target]
 
-# Attach to a running process
-python3 -m frida_ios_dump_ng -U --pid 1234
+Extract a decrypted IPA from a jailbroken iOS device using Frida.
+
+positional arguments:
+  target               App name/bundle id for a running app (when -f/--pid is not used)
+
+options:
+  -h, --help           show this help message and exit
+  -f SPAWN             Spawn an app by name or bundle id
+  --pid PID            Attach to an existing PID
+  -o OUTPUT            Output IPA path
+  --app-data           Dump the app data container to <AppName>-data
+  --metadata           Show app metadata (Info.plist, entitlements) after extraction
+  --diff IPA1 IPA2     Compare two IPA files and show differences
+  --no-resume          Do not resume a spawned process (useful for crashy apps)
+  -U                   Use USB device
+  -H HOST              SSH host for the device
+  -P PORT              SSH port (default 22)
+  -u USERNAME          SSH username
+  -p PASSWORD          SSH password
+  --workers WORKERS    Number of parallel download workers (default 4)
+  -v, --verbose        Increase verbosity (-v for verbose, -vv for debug)
+  -q, --quiet          Suppress output except errors
+  --log-file LOG_FILE  Write logs to file
+
 ```
 
-### Advanced Features
+### List and dump menu
+
+```bash
+
+python3 extract.py
+Connection: USB
+Transfer: Frida RPC
+1) Notes (com.apple.mobilenotes) pid=5877
+2) Maps (com.apple.Maps) pid=5181
+3) App Store (com.apple.AppStore) pid=5195
+4) Safari (com.apple.mobilesafari) pid=3048
+Select an app to extract: 
+
+```
+
+
+### Basic Extraction
+
+```bash
+python3 extract.py <app.bundle.name>
+```
+
+### Other Commands
 
 #### 1. Metadata Analysis (`--metadata`)
 Displays detailed app information including permissions, URL schemes, and all entitlements.
 
 ```bash
-python3 -m frida_ios_dump_ng -U -f com.apple.mobilenotes --metadata
+python3 extract.py -U -f com.apple.mobilenotes --metadata
 ```
 *Output includes: Info.plist details, minimum iOS version, and a full list of entitlements.*
 
@@ -60,7 +103,7 @@ python3 -m frida_ios_dump_ng -U -f com.apple.mobilenotes --metadata
 Extracts the IPA **and** the app's data container (Documents, Library, etc.). Useful for forensic analysis or backups.
 
 ```bash
-python3 -m frida_ios_dump_ng -U -f com.whatsapp.WhatsApp --app-data
+python3 extract.py -U -f com.whatsapp.WhatsApp --app-data
 # Creates: WhatsApp.ipa AND WhatsApp-data/ folder
 ```
 
@@ -68,23 +111,17 @@ python3 -m frida_ios_dump_ng -U -f com.whatsapp.WhatsApp --app-data
 Compare two IPA files to see what changed between versions. No device connection required.
 
 ```bash
-python3 -m frida_ios_dump_ng --diff v1.0.ipa v1.1.ipa
+python3 extract.py --diff v1.0.ipa v1.1.ipa
 ```
 *Reports: File size changes, added/removed files, version bumps, and permission/entitlement changes.*
 
-#### 4. Parallel Downloads (`--workers`)
-Speed up extraction by downloading multiple files at once (default is 4).
-
-```bash
-python3 -m frida_ios_dump_ng -U -f com.example.gaming --workers 8
-```
 
 #### 5. SSH Transfer (Faster)
 Use SSH/SFTP for file transfer while keeping Frida over USB.
 
 ```bash
 # Connect via USB for Frida, but use SSH (192.168.1.13) for data transfer
-python3 -m frida_ios_dump_ng -U -f com.example.app -H 192.168.1.13 -u mobile -p alpine
+python3 extract.py -U -f com.example.app -H 192.168.1.13 -u mobile -p alpine
 ```
 
 ### Logging Options
@@ -95,7 +132,7 @@ python3 -m frida_ios_dump_ng -U -f com.example.app -H 192.168.1.13 -u mobile -p 
 - `--log-file <file>`: Save logs to a file
 
 ```bash
-python3 -m frida_ios_dump_ng -U -f com.example.app -vv --log-file dump.log
+python3 extract.py -U -f com.example.app -vv --log-file dump.log
 ```
 
 ## CLI Arguments
